@@ -1,0 +1,260 @@
+from math import log, floor
+log2 = lambda x: log(x) / log(2)
+
+
+class NoData(Exception):
+    pass
+
+
+class OutOfDomain(Exception):
+    pass
+
+
+class Tree(object):
+    def __init__(self, predicate, yes, no, weight):
+        self.predicate = predicate
+        self.yes = yes
+        self.no = no
+        self.weight = weight
+
+    def decide(self, data):
+        try:
+            return (self.yes if self.predicate(data) else self.no).decide(data)
+        except NoData:
+            return apportion(self.yes.decide(data), self.no.decide(data), self.weight)
+        except OutOfDomain:
+            return apportion(self.yes.decide(data), self.no.decide(data), self.weight)
+
+    def __str__(self, indent=''):
+        output = ''
+        output += "\n" + indent + '+--- ' + str(self.predicate)
+        output += str(self.yes.__str__(indent=indent + '|   '))
+        output += "\n" + indent + '\\--- not ' + str(self.predicate)
+        output += str(self.no.__str__(indent=indent + '    '))
+        return output
+
+
+class Leaf(object):
+    def __init__(self, conclusion):
+        self.conclusion = conclusion
+
+    def decide(self, _):
+        return self.conclusion
+
+    def __str__(self, indent=''):
+        return "\n" + indent + '\\---' + str(self.conclusion)
+
+
+class FiniteDomain(object):
+    def __init__(self, values):
+        self.values = values
+
+    def is_in(self, value):
+        return value in self.values
+
+
+class MissingMiddle(object):
+    def __init__(self, lower, upper):
+        self.lower = lower
+        self.upper = upper
+
+    def is_in(self, value):
+        return value <= self.lower or value >= self.upper
+
+
+class IsSame(object):
+    def __init__(self, key, value, domain=None):
+        self.key = key
+        self.value = value
+        self.domain = domain
+
+    def __call__(self, data):
+        if self.key not in data:
+            raise NoData()
+        if not self.domain.is_in(data[self.key]):
+            raise OutOfDomain()
+        return data[self.key] == self.value
+
+    def __str__(self):
+        return "%s is same as %s" % (self.key, self.value)
+
+
+class IsEqualOrGreaterThan(object):
+    def __init__(self, key, value, domain=None):
+        self.key = key
+        self.value = value
+        self.domain = domain
+
+    def __call__(self, data):
+        if self.key not in data:
+            raise NoData()
+        if not self.domain.is_in(data[self.key]):
+            raise OutOfDomain()
+        return data[self.key] >= self.value
+
+    def __str__(self):
+        return "%s is greater than %s" % (self.key, self.value)
+
+
+class IsNone(object):
+    def __init__(self, key, domain=None):
+        self.key = key
+        self.domain = domain
+
+    def __call__(self, data):
+        if self.key not in data:
+            return True
+        if not self.domain.is_in(data[self.key]):
+            raise OutOfDomain()
+        return data[self.key] is None
+
+    def __str__(self):
+        return "%s is missing" % self.key
+
+
+def build(examples):
+    predicate = best_predicate(examples)
+    if predicate == None:
+        return Leaf(probability_distribution(examples))
+    yesses, nos = partition(predicate, examples)
+    if len(yesses) == len(examples):
+        return Leaf(probability_distribution(yesses))
+    if len(nos) == len(examples):
+        return Leaf(probability_distribution(nos))
+    return Tree(predicate, build(yesses), build(nos), weigh(yesses, nos, len(examples)))
+
+
+def prune(examples, tree, threshold=0.1):
+    if is_a_leaf(tree):
+        return tree
+    yesses, nos = partition(tree.predicate, examples)
+    if is_a_branch(tree.yes):
+        tree.yes = prune(yesses, tree.yes)
+    if is_a_branch(tree.no):
+        tree.no = prune(nos, tree.no)
+    if is_a_leaf(tree.yes) and is_a_leaf(tree.no):
+        if calculate_gain(examples, yesses, nos) < threshold:
+            majority = yesses if len(yesses) > len(nos) else nos
+            return Leaf(probability_distribution(majority))
+    return tree
+
+
+def best_predicate(examples):
+    choice, highest_gain = None, 0.0
+    for key in all_keys(examples):
+        for predicate in create_predicates(key, examples):
+            gain = measure_predicate(predicate, examples)
+            if gain > highest_gain:
+                choice, highest_gain = predicate, gain
+    return choice
+
+
+def all_keys(examples):
+    keys = []
+    for example in examples:
+        keys += example['data'].keys()
+    return set(keys)
+
+
+def measure_predicate(predicate, examples):
+    yesses, nos = partition(predicate, examples)
+    return calculate_gain(examples, yesses, nos)
+
+
+def calculate_gain(both, yesses, nos):
+    return measure_entropy(probability_distribution(both)) \
+        - len(yesses)/len(both) * measure_entropy(probability_distribution(yesses)) \
+        - len(nos)/len(both) * measure_entropy(probability_distribution(nos))
+
+
+def histogram(examples):
+    counts = {}
+    for example in examples:
+        if example['conclusion'] not in counts:
+            counts[example['conclusion']] = 1
+        else:
+            counts[example['conclusion']] += 1
+    return counts
+
+
+def probability_distribution(examples):
+    counts = histogram(examples)
+    total = sum(counts.values())
+    return {key: float(value)/total for key, value in counts.iteritems()}
+
+
+def measure_entropy(probabilities):
+    entropy = 0.0
+    for key, probability in probabilities.iteritems():
+        entropy -= probability * log2(probability)
+    return entropy
+
+
+def create_predicates(key, examples):
+    values = set()
+    for example in examples:
+        if key in example['data']:
+            values.add(example['data'][key])
+        else:
+            values.add(None)
+    return [select_predicate(key, value, values) for value in values]
+
+
+def select_predicate(key, value, values):
+    if value is None:
+        return IsNone(key, domain=FiniteDomain(values))
+    elif value.__class__.__name__ in ['float', 'int']:
+        lower = next_lowest(value, values)
+        return IsEqualOrGreaterThan(key, value, domain=MissingMiddle(lower, value))
+    else:
+        return IsSame(key, value, domain=FiniteDomain(values))
+
+
+def next_lowest(value, values):
+    lower = None
+    for candidate in sorted(list(values)):  # inefficient
+        if candidate < value:
+            lower = candidate
+        if candidate == value:
+            return lower
+    return value
+
+
+def partition(predicate, examples):
+    yesses, nos = [], []
+    for example in examples:
+        try:
+            if predicate(example['data']):
+                yesses.append(example)
+            else:
+                nos.append(example)
+        except NoData:
+            nos.append(example)
+    return [yesses, nos]
+
+
+def weigh(yesses, nos, size):
+    return float(len(yesses)) / size
+
+
+def apportion(distribution_1, distribution_2, weight):
+    return merge_as_sums(
+        value_map(lambda probability: weight * probability, distribution_1),
+        value_map(lambda probability: (1 - weight) * probability, distribution_2))
+
+
+def merge_as_sums(distribution_1, distribution_2):
+    return {key: distribution_1.get(key, 0.0) + distribution_2.get(key, 0.0)
+            for key in set(distribution_1.keys() + distribution_2.keys())}
+
+
+def value_map(fn, distribution):
+    return {key: fn(distribution[key]) for key in distribution.keys()}
+
+
+def is_a_branch(tree):
+    return hasattr(tree, 'predicate')
+
+
+def is_a_leaf(tree):
+    return not is_a_branch(tree)
