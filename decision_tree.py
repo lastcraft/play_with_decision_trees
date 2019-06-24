@@ -1,6 +1,6 @@
 from predicate import (
-    NoData, OutOfDomain,
-    FiniteDomain, MissingMiddle, IsNone, IsSame, IsEqualOrGreaterThan)
+    NoData, OutOfDomain, FiniteDomain, MissingMiddle,
+    IsNone, IsSame, IsEqualOrGreaterThan)
 from math import log
 log2 = lambda x: log(x) / log(2)
 
