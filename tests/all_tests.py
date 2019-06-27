@@ -70,6 +70,7 @@ def test_deciding_with_missing_data():
     test_with_no_data_falls_back_training_weights()
     test_probablity_is_apportioned_down_the_tree()
     test_missing_data_in_examples_is_treated_as_an_option()
+    test_missing_example_determines_decision_emphatically_when_test_data_is_missing()
 
 
 def test_coping_with_unseen_options():
@@ -293,6 +294,13 @@ def test_missing_data_in_examples_is_treated_as_an_option():
     assert(tree.decide({'weather': 'sunny'}) == {'happy': 1.0})
     assert(tree.decide({}) == {'cheerful': 1.0})
     assert(tree.decide({'weather': 'rainy'}) == {'sad': 1.0})
+
+
+def test_missing_example_determines_decision_emphatically_when_test_data_is_missing():
+    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
+                {'data': {}, 'conclusion': 'cheerful'}]
+    tree = build(examples)
+    assert(tree.decide({}) == {'cheerful': 1.0})
 
 
 def test_probablity_is_apportioned_down_the_tree():
