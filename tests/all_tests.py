@@ -1,6 +1,6 @@
 from decision_tree import (
     build, prune, measure_predicate, FiniteDomain, IsSame)
-from metrics import measure_entropy, histogram, probability_distribution
+from metrics_tests import test_statistics
 from math import log, floor
 log2 = lambda x: log(x) / log(2)  # noqa
 
@@ -23,14 +23,6 @@ def all_tests():
     test_deciding_with_missing_data()
     test_coping_with_unseen_options()
     test_choosing_from_numerical_data()
-
-
-def test_statistics():
-    test_histogram_can_count_a_single_conclusion()
-    test_histogram_can_count_a_different_conclusion()
-    test_distribution_can_measure_many_conclusions()
-    test_entropy_of_uniform_set_is_zero()
-    test_entropy_of_a_mixed_set_is_bigger_than_zero()
 
 
 def test_gain():
@@ -84,47 +76,6 @@ def test_choosing_from_numerical_data():
     test_treat_gap_between_same_values_as_decidable()
     test_can_decide_on_single_numerical_value()
     test_can_handle_a_fuzzy_numerical_boundary()
-
-
-def test_histogram_can_count_a_single_conclusion():
-    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'}]
-    assert(histogram(examples) == {'happy': 1})
-
-
-def test_histogram_can_count_a_different_conclusion():
-    examples = [{'data': {}, 'conclusion': 'happy'},
-                {'data': {}, 'conclusion': 'sad'}]
-    assert(histogram(examples) == {'happy': 1, 'sad': 1})
-
-
-def test_distribution_can_measure_many_conclusions():
-    examples = [{'data': {}, 'conclusion': 'happy'},
-                {'data': {}, 'conclusion': 'sad'},
-                {'data': {}, 'conclusion': 'happy'},
-                {'data': {}, 'conclusion': 'sad'}]
-    assert(probability_distribution(examples) == {'happy': 0.5, 'sad': 0.5})
-
-
-def test_entropy_of_uniform_set_is_zero():
-    examples = [{'data': {}, 'conclusion': 'happy'},
-                {'data': {}, 'conclusion': 'happy'}]
-    assert(measure_entropy(probability_distribution(examples)) == 0.0)
-
-
-def test_entropy_of_a_mixed_set_is_bigger_than_zero():
-    examples = [{'data': {}, 'conclusion': 'happy'},
-                {'data': {}, 'conclusion': 'happy'},
-                {'data': {}, 'conclusion': 'sad'}]
-    assert(measure_entropy(probability_distribution(examples)) > 0.0)
-
-
-def test_entropy_of_a_maximally_mixed_set_is_one():
-    examples = [{'data': {}, 'conclusion': 'happy'},
-                {'data': {}, 'conclusion': 'happy'},
-                {'data': {}, 'conclusion': 'sad'},
-                {'data': {}, 'conclusion': 'sad'}]
-    measure_entropy(probability_distribution(examples))
-    assert(measure_entropy(probability_distribution(examples)) == 1.0)
 
 
 def test_gain_is_zero_if_predicate_cannot_make_progress():
