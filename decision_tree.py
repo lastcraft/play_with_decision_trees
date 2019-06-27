@@ -1,7 +1,8 @@
 from predicate import (
     NoData, OutOfDomain, FiniteDomain, MissingMiddle,
-    IsNone, IsSame, IsEqualOrGreaterThan)
-from math import log
+    IsNone, IsSame, IsEqualOrGreaterThan, is_is_none)
+from metrics import calculate_gain, probability_distribution
+from math import log, floor
 log2 = lambda x: log(x) / log(2)
 
 
@@ -72,16 +73,11 @@ def best_predicate(examples):
     for key in all_keys(examples):
         for predicate in create_predicates(key, examples):
             gain = measure_predicate(predicate, examples)
+            if approximately_equal(gain, highest_gain) and is_is_none(predicate):
+                choice = predicate
             if gain > highest_gain:
                 choice, highest_gain = predicate, gain
     return choice
-
-
-def all_keys(examples):
-    keys = []
-    for example in examples:
-        keys += example['data'].keys()
-    return set(keys)
 
 
 def measure_predicate(predicate, examples):
@@ -89,33 +85,11 @@ def measure_predicate(predicate, examples):
     return calculate_gain(examples, yesses, nos)
 
 
-def calculate_gain(both, yesses, nos):
-    return measure_entropy(probability_distribution(both)) \
-        - len(yesses)/len(both) * measure_entropy(probability_distribution(yesses)) \
-        - len(nos)/len(both) * measure_entropy(probability_distribution(nos))
-
-
-def histogram(examples):
-    counts = {}
+def all_keys(examples):
+    keys = []
     for example in examples:
-        if example['conclusion'] not in counts:
-            counts[example['conclusion']] = 1
-        else:
-            counts[example['conclusion']] += 1
-    return counts
-
-
-def probability_distribution(examples):
-    counts = histogram(examples)
-    total = sum(counts.values())
-    return {key: float(value)/total for key, value in counts.iteritems()}
-
-
-def measure_entropy(probabilities):
-    entropy = 0.0
-    for key, probability in probabilities.iteritems():
-        entropy -= probability * log2(probability)
-    return entropy
+        keys += example['data'].keys()
+    return set(keys)
 
 
 def create_predicates(key, examples):
@@ -186,3 +160,7 @@ def is_a_branch(tree):
 
 def is_a_leaf(tree):
     return not is_a_branch(tree)
+
+
+def approximately_equal(float1, float2):
+    return floor(float1) * 1000000 == floor(float2) *1000000

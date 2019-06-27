@@ -72,3 +72,7 @@ class IsNone(object):
 
     def __str__(self):
         return "%s is missing" % self.key
+
+
+def is_is_none(predicate):
+    return predicate.__class__.__name__ == 'IsNone'
