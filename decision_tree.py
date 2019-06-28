@@ -2,10 +2,6 @@ from predicate import NoData, OutOfDomain
 from math import log
 
 
-def log2(x):
-    return log(x) / log(2)
-
-
 class Tree(object):
     def __init__(self, predicate, yes, no, weight):
         self.predicate = predicate
@@ -62,3 +58,7 @@ def is_a_branch(tree):
 
 def is_a_leaf(tree):
     return not is_a_branch(tree)
+
+
+def log2(x):
+    return log(x) / log(2)
