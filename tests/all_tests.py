@@ -1,5 +1,5 @@
-from decision_tree import measure_predicate, FiniteDomain, IsSame
-from decision_tree_builder import build, prune
+from predicate import FiniteDomain, IsSame
+from decision_tree_builder import build, prune, measure_predicate
 from metrics_tests import test_statistics
 from math import log, floor
 log2 = lambda x: log(x) / log(2)  # noqa
