@@ -3,9 +3,14 @@ log2 = lambda x: log(x) / log(2)
 
 
 def calculate_gain(both, yesses, nos):
+    entropy = variance if is_numeric(both) else boltzmann_entropy
     return entropy(both) \
         - len(yesses)/len(both) * entropy(yesses) \
         - len(nos)/len(both) * entropy(nos)
+
+
+def is_numeric(examples):
+    return examples[0]['conclusion'].__class__.__name__ in ['int', 'float']
 
 
 def variance(examples):
@@ -13,7 +18,7 @@ def variance(examples):
     return sum([(example['conclusion'] - mean) ** 2 for example in examples])
 
 
-def entropy(examples):
+def boltzmann_entropy(examples):
     probabilities = probability_distribution(examples)
     total_entropy = 0.0
     for key, probability in probabilities.iteritems():

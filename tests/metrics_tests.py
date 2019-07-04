@@ -1,4 +1,4 @@
-from metrics import entropy, histogram, probability_distribution
+from metrics import boltzmann_entropy, histogram, probability_distribution
 
 
 def test_statistics():
@@ -31,14 +31,14 @@ def test_distribution_can_measure_many_conclusions():
 def test_entropy_of_uniform_set_is_zero():
     examples = [{'data': {}, 'conclusion': 'happy'},
                 {'data': {}, 'conclusion': 'happy'}]
-    assert(entropy(examples) == 0.0)
+    assert(boltzmann_entropy(examples) == 0.0)
 
 
 def test_entropy_of_a_mixed_set_is_bigger_than_zero():
     examples = [{'data': {}, 'conclusion': 'happy'},
                 {'data': {}, 'conclusion': 'happy'},
                 {'data': {}, 'conclusion': 'sad'}]
-    assert(entropy(examples) > 0.0)
+    assert(boltzmann_entropy(examples) > 0.0)
 
 
 def test_entropy_of_a_maximally_mixed_set_is_one():
@@ -46,4 +46,4 @@ def test_entropy_of_a_maximally_mixed_set_is_one():
                 {'data': {}, 'conclusion': 'happy'},
                 {'data': {}, 'conclusion': 'sad'},
                 {'data': {}, 'conclusion': 'sad'}]
-    assert(entropy(examples) == 1.0)
+    assert(boltzmann_entropy(examples) == 1.0)

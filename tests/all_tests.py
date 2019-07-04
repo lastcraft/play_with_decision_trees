@@ -22,6 +22,7 @@ def all_tests():
     test_deciding_with_missing_data()
     test_coping_with_unseen_options()
     test_choosing_from_numerical_data()
+    test_numerical_evaluations()
 
 
 def test_gain():
@@ -75,6 +76,11 @@ def test_choosing_from_numerical_data():
     test_treat_gap_between_same_values_as_decidable()
     test_can_decide_on_single_numerical_value()
     test_can_handle_a_fuzzy_numerical_boundary()
+
+
+def test_numerical_evaluations():
+    test_produce_a_numerical_result_from_a_single_example()
+    test_choose_a_value_from_numerical_outcomes()
 
 
 def test_gain_is_zero_if_predicate_cannot_make_progress():
@@ -362,5 +368,12 @@ def test_can_handle_a_fuzzy_numerical_boundary():
     assert(tree.decide({'rainfall': 0.45}) == {'sad': 1.0})
 
 
-# all_tests()
-test_missing_data_in_examples_is_treated_as_an_option()
+def test_produce_a_numerical_result_from_a_single_example():
+    pass
+
+
+def test_choose_a_value_from_numerical_outcomes():
+    pass
+
+
+all_tests()
