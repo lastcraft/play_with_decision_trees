@@ -5,6 +5,7 @@ from tests.metrics_tests import test_statistics, test_gain
 from tests.label_predicate_tests import test_text_label_predicates
 from math import floor
 
+from tests.missing_data_tests import test_deciding_with_missing_data, test_coping_with_unseen_options
 from tests.pruning_tests import test_pruning
 
 
@@ -29,18 +30,6 @@ def all_tests():
     test_numerical_evaluations()
 
 
-def test_deciding_with_missing_data():
-    test_with_no_data_result_is_divided()
-    test_with_no_data_falls_back_training_weights()
-    test_probablity_is_apportioned_down_the_tree()
-    test_missing_data_in_examples_is_treated_as_an_option()
-    test_missing_example_determines_decision_emphatically_when_test_data_is_missing()
-
-
-def test_coping_with_unseen_options():
-    test_unseen_option_treated_as_missing_data()
-
-
 def test_choosing_from_numerical_data():
     test_decide_based_on_two_examples_separated_numerically()
     test_can_decide_with_mixed_finite_and_numerical_data()
@@ -54,48 +43,6 @@ def test_numerical_evaluations():
     test_produce_a_numerical_result_from_a_single_example()
     test_choose_a_value_from_numerical_outcomes()
     test_can_approximately_add_up()
-
-
-def test_with_no_data_result_is_divided():
-    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'rainy'}, 'conclusion': 'sad'}]
-    tree = build(examples)
-    assert(tree.decide({}) == {'happy': 0.5, 'sad': 0.5})
-
-
-def test_with_no_data_falls_back_training_weights():
-    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'rainy'}, 'conclusion': 'sad'}]
-    tree = build(examples)
-    assert(approximately(tree.decide({})) == {'happy': 0.66, 'sad': 0.33})
-
-
-def test_missing_data_in_examples_is_treated_as_an_option():
-    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
-                {'data': {}, 'conclusion': 'cheerful'},
-                {'data': {'weather': 'rainy'}, 'conclusion': 'sad'}]
-    tree = build(examples)
-    assert(tree.decide({'weather': 'sunny'}) == {'happy': 1.0})
-    assert(tree.decide({}) == {'cheerful': 1.0})
-    assert(tree.decide({'weather': 'rainy'}) == {'sad': 1.0})
-
-
-def test_missing_example_determines_decision_emphatically_when_test_data_is_missing():
-    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
-                {'data': {}, 'conclusion': 'cheerful'}]
-    tree = build(examples)
-    assert(tree.decide({}) == {'cheerful': 1.0})
-
-
-def test_probablity_is_apportioned_down_the_tree():
-    examples = [{'data': {'sky': 'sunny', 'rain': 'no'}, 'conclusion': 'happy'},
-                {'data': {'sky': 'cloudy', 'rain': 'no'}, 'conclusion': 'cheerful'},
-                {'data': {'sky': 'sunny', 'rain': 'yes'}, 'conclusion': 'confused'},
-                {'data': {'sky': 'cloudy', 'rain': 'yes'}, 'conclusion': 'sad'}]
-    tree = build(examples)
-    assert(tree.decide({}) == {'happy': 0.25, 'sad': 0.25,
-                               'cheerful': 0.25, 'confused': 0.25})
 
 
 def test_can_prune_tree_with_missing_example_data():
