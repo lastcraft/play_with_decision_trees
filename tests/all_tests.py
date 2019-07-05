@@ -1,4 +1,3 @@
-from decision_tree_builder import build
 from tests.logical_deduction_tests import test_logical_deductions
 from tests.many_choices_tests import test_option_with_many_choices
 from tests.metrics_tests import test_statistics, test_gain
@@ -29,13 +28,6 @@ def all_tests():
     test_coping_with_unseen_options()
     test_choosing_from_numerical_data()
     test_numerical_evaluations()
-
-
-def test_unseen_option_treated_as_missing_data():
-    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'rainy'}, 'conclusion': 'sad'}]
-    tree = build(examples)
-    assert(tree.decide({'weather': 'cloudy'}) == {'happy': 0.5, 'sad': 0.5})
 
 
 all_tests()

@@ -1,5 +1,5 @@
 from decision_tree_builder import build
-from tests.all_tests import test_unseen_option_treated_as_missing_data, approximately
+from tests.all_tests import approximately
 
 
 def test_deciding_with_missing_data():
@@ -54,3 +54,10 @@ def test_probablity_is_apportioned_down_the_tree():
     tree = build(examples)
     assert(tree.decide({}) == {'happy': 0.25, 'sad': 0.25,
                                'cheerful': 0.25, 'confused': 0.25})
+
+
+def test_unseen_option_treated_as_missing_data():
+    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
+                {'data': {'weather': 'rainy'}, 'conclusion': 'sad'}]
+    tree = build(examples)
+    assert(tree.decide({'weather': 'cloudy'}) == {'happy': 0.5, 'sad': 0.5})
