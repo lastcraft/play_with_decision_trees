@@ -1,5 +1,5 @@
 from decision_tree_builder import build
-from tests.all_tests import approximately
+from tests.missing_data_tests import approximately
 
 
 def test_choosing_from_numerical_data():

@@ -1,5 +1,6 @@
+from math import floor
+
 from decision_tree_builder import build
-from tests.all_tests import approximately
 
 
 def test_deciding_with_missing_data():
@@ -61,3 +62,11 @@ def test_unseen_option_treated_as_missing_data():
                 {'data': {'weather': 'rainy'}, 'conclusion': 'sad'}]
     tree = build(examples)
     assert(tree.decide({'weather': 'cloudy'}) == {'happy': 0.5, 'sad': 0.5})
+
+
+def one_dp(number):
+    return floor(100 * number)/100.0
+
+
+def approximately(a_dict):
+    return {key: one_dp(value) for key, value in a_dict.iteritems()}
