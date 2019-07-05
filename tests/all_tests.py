@@ -1,4 +1,5 @@
 from decision_tree_builder import build, prune
+from tests.logical_deduction_tests import test_logical_deductions
 from tests.metrics_tests import test_statistics, test_gain
 from tests.label_predicate_tests import test_text_label_predicates
 from math import floor
@@ -24,14 +25,6 @@ def all_tests():
     test_coping_with_unseen_options()
     test_choosing_from_numerical_data()
     test_numerical_evaluations()
-
-
-def test_logical_deductions():
-    test_only_one_conclusion()
-    test_two_fields_with_second_one_redundant()
-    test_two_fields_with_first_one_redundant()
-    test_decide_on_two_union_fields()
-    test_decide_on_two_xor_fields()
 
 
 def test_option_with_many_choices():
@@ -70,61 +63,6 @@ def test_numerical_evaluations():
     test_produce_a_numerical_result_from_a_single_example()
     test_choose_a_value_from_numerical_outcomes()
     test_can_approximately_add_up()
-
-
-def test_only_one_conclusion():
-    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'rainy'}, 'conclusion': 'happy'}]
-    tree = build(examples)
-    assert(tree.decide({'weather': 'sunny'}) == {'happy': 1.0})
-
-
-def test_two_fields_with_second_one_redundant():
-    examples = [{'data': {'weather': 'sunny', 'horoscope': 'bad'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'rainy', 'horoscope': 'bad'}, 'conclusion': 'sad'},
-                {'data': {'weather': 'sunny', 'horoscope': 'good'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'rainy', 'horoscope': 'good'}, 'conclusion': 'sad'}]
-    tree = build(examples)
-    assert(tree.decide({'weather': 'sunny', 'horoscope': 'bad'}) == {'happy': 1.0})
-    assert(tree.decide({'weather': 'sunny', 'horoscope': 'good'}) == {'happy': 1.0})
-    assert(tree.decide({'weather': 'rainy', 'horoscope': 'bad'}) == {'sad': 1.0})
-    assert(tree.decide({'weather': 'rainy', 'horoscope': 'good'}) == {'sad': 1.0})
-
-
-def test_two_fields_with_first_one_redundant():
-    examples = [{'data': {'weather': 'sunny', 'horoscope': 'bad'}, 'conclusion': 'sad'},
-                {'data': {'weather': 'rainy', 'horoscope': 'bad'}, 'conclusion': 'sad'},
-                {'data': {'weather': 'sunny', 'horoscope': 'good'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'rainy', 'horoscope': 'good'}, 'conclusion': 'happy'}]
-    tree = build(examples)
-    assert(tree.decide({'weather': 'sunny', 'horoscope': 'bad'}) == {'sad': 1.0})
-    assert(tree.decide({'weather': 'sunny', 'horoscope': 'good'}) == {'happy': 1.0})
-    assert(tree.decide({'weather': 'rainy', 'horoscope': 'bad'}) == {'sad': 1.0})
-    assert(tree.decide({'weather': 'rainy', 'horoscope': 'good'}) == {'happy': 1.0})
-
-
-def test_decide_on_two_union_fields():
-    examples = [{'data': {'weather': 'sunny', 'horoscope': 'bad'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'rainy', 'horoscope': 'bad'}, 'conclusion': 'sad'},
-                {'data': {'weather': 'sunny', 'horoscope': 'good'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'rainy', 'horoscope': 'good'}, 'conclusion': 'happy'}]
-    tree = build(examples)
-    assert(tree.decide({'weather': 'sunny', 'horoscope': 'bad'}) == {'happy': 1.0})
-    assert(tree.decide({'weather': 'sunny', 'horoscope': 'good'}) == {'happy': 1.0})
-    assert(tree.decide({'weather': 'rainy', 'horoscope': 'bad'}) == {'sad': 1.0})
-    assert(tree.decide({'weather': 'rainy', 'horoscope': 'good'}) == {'happy': 1.0})
-
-
-def test_decide_on_two_xor_fields():
-    examples = [{'data': {'weather': 'sunny', 'horoscope': 'bad'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'rainy', 'horoscope': 'bad'}, 'conclusion': 'sad'},
-                {'data': {'weather': 'sunny', 'horoscope': 'good'}, 'conclusion': 'sad'},
-                {'data': {'weather': 'rainy', 'horoscope': 'good'}, 'conclusion': 'happy'}]
-    tree = build(examples)
-    assert(tree.decide({'weather': 'sunny', 'horoscope': 'bad'}) == {'happy': 1.0})
-    assert(tree.decide({'weather': 'sunny', 'horoscope': 'good'}) == {'sad': 1.0})
-    assert(tree.decide({'weather': 'rainy', 'horoscope': 'bad'}) == {'sad': 1.0})
-    assert(tree.decide({'weather': 'rainy', 'horoscope': 'good'}) == {'happy': 1.0})
 
 
 def test_can_choose_from_a_three_choice_option():
