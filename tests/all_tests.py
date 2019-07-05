@@ -81,6 +81,7 @@ def test_choosing_from_numerical_data():
 def test_numerical_evaluations():
     test_produce_a_numerical_result_from_a_single_example()
     test_choose_a_value_from_numerical_outcomes()
+    test_can_approximately_add_up()
 
 
 def test_gain_is_zero_if_predicate_cannot_make_progress():
@@ -369,11 +370,28 @@ def test_can_handle_a_fuzzy_numerical_boundary():
 
 
 def test_produce_a_numerical_result_from_a_single_example():
-    pass
+    examples = [{'data': {'rainfall': 'high'}, 'conclusion': 2.0}]
+    tree = build(examples)
+    assert(tree.decide({'rainfall': 'high'}) == {2.0: 1.0})
 
 
 def test_choose_a_value_from_numerical_outcomes():
-    pass
+    examples = [{'data': {'rainfall': 'high'}, 'conclusion': 2.0},
+                {'data': {'rainfall': 'low'}, 'conclusion': 0.0}]
+    tree = build(examples)
+    assert(tree.decide({'rainfall': 'high'}) == {2.0: 1.0})
+    assert(tree.decide({'rainfall': 'low'}) == {0.0: 1.0})
+
+
+def test_can_approximately_add_up():
+    examples = [{'data': {'a': 2.0, 'b': 3.0}, 'conclusion': 5.0},
+                {'data': {'a': 0.0, 'b': 2.0}, 'conclusion': 2.0},
+                {'data': {'a': 2.0, 'b': 2.0}, 'conclusion': 4.0},
+                {'data': {'a': 1.0, 'b': 3.0}, 'conclusion': 4.0}]
+    tree = build(examples)
+    assert(tree.decide({'a': 0.0, 'b': 2.0}) == {2.0: 1.0})
+    assert(tree.decide({'a': 0.0, 'b': 0.0}) == {2.0: 1.0})
+    assert(tree.decide({'a': 4.0, 'b': 4.0}) == {5.0: 1.0})
 
 
 all_tests()

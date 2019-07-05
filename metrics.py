@@ -14,7 +14,7 @@ def is_numeric(examples):
 
 
 def variance(examples):
-    mean = sum([example['conculsion'] for example in examples])
+    mean = sum([example['conclusion'] for example in examples])
     return sum([(example['conclusion'] - mean) ** 2 for example in examples])
 
 
