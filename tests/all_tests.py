@@ -1,5 +1,6 @@
 from decision_tree_builder import build, prune
 from tests.logical_deduction_tests import test_logical_deductions
+from tests.many_choices_tests import test_option_with_many_choices
 from tests.metrics_tests import test_statistics, test_gain
 from tests.label_predicate_tests import test_text_label_predicates
 from math import floor
@@ -25,10 +26,6 @@ def all_tests():
     test_coping_with_unseen_options()
     test_choosing_from_numerical_data()
     test_numerical_evaluations()
-
-
-def test_option_with_many_choices():
-    test_can_choose_from_a_three_choice_option()
 
 
 def test_pruning():
@@ -63,16 +60,6 @@ def test_numerical_evaluations():
     test_produce_a_numerical_result_from_a_single_example()
     test_choose_a_value_from_numerical_outcomes()
     test_can_approximately_add_up()
-
-
-def test_can_choose_from_a_three_choice_option():
-    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'cloudy'}, 'conclusion': 'cheerful'},
-                {'data': {'weather': 'rainy'}, 'conclusion': 'sad'}]
-    tree = build(examples)
-    assert(tree.decide({'weather': 'sunny'}) == {'happy': 1.0})
-    assert(tree.decide({'weather': 'cloudy'}) == {'cheerful': 1.0})
-    assert(tree.decide({'weather': 'rainy'}) == {'sad': 1.0})
 
 
 def test_prune_does_nothing_on_decisive_tree():
