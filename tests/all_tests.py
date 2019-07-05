@@ -1,6 +1,6 @@
-from predicate import FiniteDomain, IsSame
-from decision_tree_builder import build, prune, measure_predicate
+from decision_tree_builder import build, prune
 from metrics_tests import test_statistics
+from metrics_tests import test_gain
 from math import floor
 
 
@@ -23,11 +23,6 @@ def all_tests():
     test_coping_with_unseen_options()
     test_choosing_from_numerical_data()
     test_numerical_evaluations()
-
-
-def test_gain():
-    test_gain_is_zero_if_predicate_cannot_make_progress()
-    test_gain_is_positive_for_two_different_examples()
 
 
 def test_text_label_predicates():
@@ -82,20 +77,6 @@ def test_numerical_evaluations():
     test_produce_a_numerical_result_from_a_single_example()
     test_choose_a_value_from_numerical_outcomes()
     test_can_approximately_add_up()
-
-
-def test_gain_is_zero_if_predicate_cannot_make_progress():
-    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'cloudy'}, 'conclusion': 'happy'}]
-    predicate = IsSame('weather', 'sunny', domain=FiniteDomain({'sunny', 'cloudy'}))
-    assert(measure_predicate(predicate, examples) == 0.0)
-
-
-def test_gain_is_positive_for_two_different_examples():
-    examples = [{'data': {'weather': 'sunny'}, 'conclusion': 'happy'},
-                {'data': {'weather': 'cloudy'}, 'conclusion': 'sad'}]
-    predicate = IsSame('weather', 'sunny', domain=FiniteDomain({'sunny', 'cloudy'}))
-    assert(measure_predicate(predicate, examples) > 0.0)
 
 
 def test_decide_with_just_one_example():
