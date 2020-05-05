@@ -1,4 +1,4 @@
-from predicate import NoData, OutOfDomain
+from predicates import NoData, OutOfDomain
 from math import log
 
 

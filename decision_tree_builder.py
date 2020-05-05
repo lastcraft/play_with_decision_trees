@@ -1,6 +1,6 @@
 from decision_tree import is_a_leaf, is_a_branch, Leaf, Tree
 from metrics import calculate_gain, probability_distribution
-from predicate import (
+from predicates import (
     NoData, IsNone, IsEqualOrGreaterThan, IsSame, MissingMiddle, FiniteDomain,
     is_is_none)
 from math import floor

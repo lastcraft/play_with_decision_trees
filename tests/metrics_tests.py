@@ -1,6 +1,6 @@
 from decision_tree_builder import measure_predicate
 from metrics import boltzmann_entropy, histogram, probability_distribution
-from predicate import IsSame, FiniteDomain
+from predicates import IsSame, FiniteDomain
 
 
 def test_statistics():
