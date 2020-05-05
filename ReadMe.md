@@ -1,4 +1,4 @@
-###### Pure Python Decision Tree
+### Pure Python Decision Tree
 
 This is not production code. I wrote it for my son to save him time
 writing an adventure game. The creatures had a lot of "if" statements
@@ -9,7 +9,7 @@ There are no external modules, not even a unit tester. I didn't
 want to complicate his project.
 
 In the end, he wanted to code it all himself, but hey, I
-learned a bit of AI.
+learned a bit of AI :).
 
 Usage:
 
