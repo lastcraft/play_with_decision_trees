@@ -33,3 +33,7 @@ The result is the chosen conclusion(s) with probabilities when given a partial e
 * The decision can cope with missing data, giving probalistic answers.
 * The tree can be pruned to avoid overfitting.
 * Confidence is linearly interpolated between conclusion boundaries.
+
+**Run tests with**:
+
+`python -m tests.all_tests`

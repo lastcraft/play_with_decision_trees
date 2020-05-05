@@ -20,4 +20,6 @@ def all_tests():
     test_numerical_evaluations()
 
 
-all_tests()
+if __name__ == '__main__':
+    all_tests()
+    print('Tests complete')
