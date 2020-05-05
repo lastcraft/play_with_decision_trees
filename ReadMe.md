@@ -27,7 +27,6 @@ Each row has a state as a dict in "data" and the associated result in "conclusio
 The result is the chosen conclusion(s) with probabilities.
 
 **Features**:
-
-The tree builder copes with numerical data as well as labels.
-The tree can be pruned to avoid overfitting.
-Confidence is linearly interpolated between data points.
+* The tree builder copes with numerical data as well as labels.
+* The tree can be pruned to avoid overfitting.
+* Confidence is linearly interpolated between data points.
